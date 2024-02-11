@@ -29,7 +29,6 @@ public class CsvJsonParser {
 
         writeString(empsAsJSON, "data.json");
 
-
     }
 
 
