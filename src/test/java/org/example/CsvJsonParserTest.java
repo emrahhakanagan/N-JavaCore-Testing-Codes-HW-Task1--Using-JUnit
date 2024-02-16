@@ -3,32 +3,36 @@ package org.example;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
 import java.util.List;
 
 import static org.example.CsvJsonParser.listToJson;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CsvJsonParserTest {
 
     private final String[] COLUMN_MAPPING_EMPLOYEE = {"id", "firstName", "lastName", "country", "age"};
+    final String VALID_FILE_CSV_PATH = new File(getClass().getClassLoader().getResource("valid_data.csv")
+            .getFile()).getAbsolutePath();
+    final String INVALID_FILE_CSV_PATH = new File(getClass().getClassLoader().getResource("invalid_data.csv")
+            .getFile()).getAbsolutePath();
 
     @Test
     @DisplayName("Test ParseCSV Positive")
     public void testParseCsvWithValidInputShouldReturnCorrectData() {
-        final String CSV_VALID_FILE_NAME = "valid_data.csv";
-
         CsvJsonParser parser = new CsvJsonParser();
-
-        List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, CSV_VALID_FILE_NAME);
+        List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, VALID_FILE_CSV_PATH);
 
         Assertions.assertNotNull(resultEmpsList, "Список не должен быть null");
-        Assertions.assertEquals(2, resultEmpsList.size(), "Ожидается, что размер списка будет 2");
+        assertEquals(2, resultEmpsList.size(), "Ожидается, что размер списка будет 2");
 
         var firstEmployee = resultEmpsList.get(0);
-        Assertions.assertEquals(1, firstEmployee.getId());
-        Assertions.assertEquals("John", firstEmployee.getFirstName());
-        Assertions.assertEquals("Smith", firstEmployee.getLastName());
-        Assertions.assertEquals("USA", firstEmployee.getCountry());
-        Assertions.assertEquals(25, firstEmployee.getAge());
+        assertEquals(1, firstEmployee.getId());
+        assertEquals("John", firstEmployee.getFirstName());
+        assertEquals("Smith", firstEmployee.getLastName());
+        assertEquals("USA", firstEmployee.getCountry());
+        assertEquals(25, firstEmployee.getAge());
     }
 
 
@@ -36,29 +40,29 @@ public class CsvJsonParserTest {
     @DisplayName("Test ListToJson Positive")
     public void testListToJsonWithValidInputShouldReturnCorrectData() {
         CsvJsonParser parser = new CsvJsonParser();
-        List<Employee> employees = List.of(
-                new Employee(1, "John", "Doe", "USA", 30),
-                new Employee(2, "Anna", "Smith", "UK", 25)
+        List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, VALID_FILE_CSV_PATH);
+        String jsonActual = listToJson(resultEmpsList);
+
+        var employees = List.of(
+                new Employee(1, "John", "Smith", "USA", 25),
+                new Employee(2, "Ivan", "Petrov", "RU", 23)
         );
+        String jsonExpected = listToJson(employees);
 
-        String json = listToJson(employees);
-
-        Assertions.assertNotNull(json);
-        Assertions.assertTrue(json.startsWith("["));
-        Assertions.assertTrue(json.endsWith("]"));
+        Assertions.assertEquals(jsonExpected, jsonActual, "JSON строка должна соответствовать ожидаемой");
+        Assertions.assertNotNull(jsonActual);
+        Assertions.assertTrue(jsonActual.startsWith("["));
+        Assertions.assertTrue(jsonActual.endsWith("]"));
     }
 
     @Test
     @DisplayName("Test ParseCSV Negative")
     public void testParseCSVWithInvalidInputShouldReturnEmptyList() {
-        final String CSV_INVALID_FILE_NAME = "invalid_data.csv";
         CsvJsonParser parser = new CsvJsonParser();
-
-        List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, CSV_INVALID_FILE_NAME);
+        List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, INVALID_FILE_CSV_PATH);
 
         var firstPerson = resultEmpsList.isEmpty();
         Assertions.assertTrue(firstPerson);
     }
-
 
 }
