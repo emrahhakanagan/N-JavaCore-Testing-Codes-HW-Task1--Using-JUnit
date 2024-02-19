@@ -1,5 +1,7 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,6 @@ public class CsvJsonParserTest {
         assertEquals(25, firstEmployee.getAge());
     }
 
-
     @Test
     @DisplayName("Test ListToJson Positive")
     public void testListToJsonWithValidInputShouldReturnCorrectData() {
@@ -49,11 +50,14 @@ public class CsvJsonParserTest {
         );
         String jsonExpected = listToJson(employees);
 
-        Assertions.assertEquals(jsonExpected, jsonActual, "JSON строка должна соответствовать ожидаемой");
-        Assertions.assertNotNull(jsonActual);
-        Assertions.assertTrue(jsonActual.startsWith("["));
-        Assertions.assertTrue(jsonActual.endsWith("]"));
+        List<Employee> actualList = new Gson().fromJson(jsonActual, new TypeToken<List<Employee>>(){}.getType());
+        List<Employee> expectedList = new Gson().fromJson(jsonExpected, new TypeToken<List<Employee>>(){}.getType());
+
+
+        Assertions.assertNotNull(actualList);
+        Assertions.assertEquals(expectedList, actualList, "JSON строка должна соответствовать ожидаемой");
     }
+
 
     @Test
     @DisplayName("Test ParseCSV Negative")
