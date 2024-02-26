@@ -17,21 +17,26 @@ import java.util.Collections;
 import java.util.List;
 
 public class CsvJsonParser {
-
     public static void main(String[] args) {
         String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
-        String fileName = "data.csv";
 
-        List<Employee> empsAsCSV = parseCSV(columnMapping, fileName);
+        final String FILE_CSV_PATH = new File(CsvJsonParser.class.getClassLoader().getResource("data.csv")
+                .getFile()).getAbsolutePath();
+
+//        final String FILE_JSON_PATH = new File(CsvJsonParser.class.getClassLoader().getResource("data.json")
+//                .getPath()).getAbsolutePath();
+
+//        String FILE_CSV_PATH = "data.csv";
+
+        List<Employee> empsAsCSV = parseCSV(columnMapping, FILE_CSV_PATH);
         System.out.println(empsAsCSV);
 
         String empsAsJSON = listToJson(empsAsCSV);
         System.out.println(empsAsJSON);
 
         writeString(empsAsJSON, "data.json");
-
+//        writeString(empsAsJSON, FILE_JSON_PATH);
     }
-
 
     public static List<Employee> parseCSV(String[] columnMapping, String fileName) {
         try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
@@ -52,7 +57,7 @@ public class CsvJsonParser {
 
     public static String listToJson(List<Employee> list) {
         GsonBuilder builder = new GsonBuilder();
-        builder.setPrettyPrinting();
+//        builder.setPrettyPrinting();
         Gson gson = builder.create();
         Type listType = new TypeToken<List<Employee>>() {}.getType();
         return gson.toJson(list, listType);

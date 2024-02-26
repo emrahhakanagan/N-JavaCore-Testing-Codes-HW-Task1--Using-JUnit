@@ -44,18 +44,12 @@ public class CsvJsonParserTest {
         List<Employee> resultEmpsList = parser.parseCSV(COLUMN_MAPPING_EMPLOYEE, VALID_FILE_CSV_PATH);
         String jsonActual = listToJson(resultEmpsList);
 
-        var employees = List.of(
-                new Employee(1, "John", "Smith", "USA", 25),
-                new Employee(2, "Ivan", "Petrov", "RU", 23)
-        );
-        String jsonExpected = listToJson(employees);
+        String jsonExpected =
+                "[{\"id\":1,\"firstName\":\"John\",\"lastName\":\"Smith\",\"country\":\"USA\",\"age\":25},"
+                + "{\"id\":2,\"firstName\":\"Ivan\",\"lastName\":\"Petrov\",\"country\":\"RU\",\"age\":23}]";
 
-        List<Employee> actualList = new Gson().fromJson(jsonActual, new TypeToken<List<Employee>>(){}.getType());
-        List<Employee> expectedList = new Gson().fromJson(jsonExpected, new TypeToken<List<Employee>>(){}.getType());
+        Assertions.assertEquals(jsonExpected, jsonActual, "JSON строка должна соответствовать ожидаемой");
 
-
-        Assertions.assertNotNull(actualList);
-        Assertions.assertEquals(expectedList, actualList, "JSON строка должна соответствовать ожидаемой");
     }
 
 
